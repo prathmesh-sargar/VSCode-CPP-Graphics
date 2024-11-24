@@ -33,3 +33,11 @@ D:.
 
 Happy coding! 🚀  
 
+![image](https://github.com/user-attachments/assets/6b9df2ea-9dd9-4029-9422-a537e7ad9e09)
+
+![image](https://github.com/user-attachments/assets/43b5a654-86e6-4309-b933-8a2a0d4f1e98)
+
+![image](https://github.com/user-attachments/assets/5fe47c6c-a34a-44f3-9ae0-ac52c991b3b7)
+
+
+
