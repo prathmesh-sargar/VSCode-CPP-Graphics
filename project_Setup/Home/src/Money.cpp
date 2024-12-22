@@ -1,94 +1,161 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <conio.h>
-#include <graphics.h>
+#include <iostream>
+using namespace std;
 
-// Global Variables
-int balance = 1000;
+class ATM {
+private:
+    double balance;
+    int pin;
 
-// Function to Display Balance
-void displayBalance() {
-    char balanceText[50];
-    sprintf(balanceText, "Your Balance: $%d", balance);
-    outtextxy(150, 150, (char*)balanceText); // Casted string literal
-}
-
-// Function to Withdraw Money
-void withdrawMoney(int amount) {
-    char message[50];
-    if (amount > balance) {
-        outtextxy(150, 200, (char*)"Insufficient Balance!"); // Casted string literal
-    } else {
-        balance -= amount;
-        sprintf(message, "Successfully Withdrawn: $%d", amount);
-        outtextxy(150, 200, (char*)message);
-        delay(2000); // Delay for user to see message
+public:
+    ATM(double initialBalance, int initialPin) {
+        balance = initialBalance;
+        pin = initialPin;
     }
-}
 
-// Function to Deposit Money
-void depositMoney(int amount) {
-    balance += amount;
-    char message[50];
-    sprintf(message, "Successfully Deposited: $%d", amount);
-    outtextxy(150, 200, (char*)message);
-    delay(2000); // Delay for user to see message
-}
-
-// Function to Run the ATM Simulation
-void runATM() {
-    int gd = DETECT, gm;
-    initgraph(&gd, &gm, (char*)""); // Fixed initgraph warning
-
-    while (1) {
-        cleardevice(); // Clear screen
-        outtextxy(180, 20, (char*)"Welcome to the ATM"); // Casted string literal
-        outtextxy(150, 100, (char*)"1. View Balance");   // Menu options
-        outtextxy(150, 120, (char*)"2. Withdraw Money");
-        outtextxy(150, 140, (char*)"3. Deposit Money");
-        outtextxy(150, 160, (char*)"4. Exit");
-
-        // User input
-        char choice;
-        choice = getch(); // Get user input
-
-        cleardevice(); // Clear screen for next action
-        switch (choice) {
-        case '1': // View Balance
-            displayBalance();
-            delay(2000); // Show balance for 2 seconds
-            break;
-        case '2': // Withdraw Money
-            outtextxy(150, 100, (char*)"Enter amount to withdraw: ");
-            char withdrawInput[10];
-            int withdrawAmount;
-            getstr(withdrawInput); // Get input as string
-            withdrawAmount = atoi(withdrawInput); // Convert to integer
-            withdrawMoney(withdrawAmount);
-            delay(2000); // Wait to display withdrawal result
-            break;
-        case '3': // Deposit Money
-            outtextxy(150, 100, (char*)"Enter amount to deposit: ");
-            char depositInput[10];
-            int depositAmount;
-            getstr(depositInput); // Get input as string
-            depositAmount = atoi(depositInput); // Convert to integer
-            depositMoney(depositAmount);
-            delay(2000); // Wait to display deposit result
-            break;
-        case '4': // Exit
-            outtextxy(150, 100, (char*)"Thank you for using the ATM!");
-            delay(2000);
-            closegraph();
-            return;
-        default:
-            outtextxy(150, 200, (char*)"Invalid Option! Try again.");
-            delay(2000); // Wait for user to see message
+    bool authenticate(int inputPin) {
+        if (inputPin == pin) {
+            return true;
+        } else {
+            cout << "Invalid PIN. Please try again." << endl;
+            return false;
         }
     }
-}
+
+    void checkBalance() {
+        cout << "Your current balance is: $" << balance << endl;
+    }
+
+    void deposit(double amount) {
+        if (amount > 0) {
+            balance += amount;
+            cout << "Successfully deposited $" << amount << endl;
+        } else {
+            cout << "Invalid deposit amount. Please enter a positive number." << endl;
+        }
+    }
+
+    void withdraw(double amount) {
+        if (amount > balance) {
+            cout << "Insufficient balance. Please try a smaller amount." << endl;
+        } else if (amount <= 0) {
+            cout << "Invalid withdrawal amount. Please enter a positive number." << endl;
+        } else {
+            balance -= amount;
+            cout << "Successfully withdrew $" << amount << endl;
+        }
+    }
+
+    // Suggest accurate financial advice based on balance
+    void suggestAdvice() {
+        cout << "\n--- Financial Advice ---" << endl;
+
+        if (balance < 100) {
+            cout << "Warning: Your balance is low. Consider saving more to build a financial cushion." << endl;
+            cout << "Suggestion: Start saving small amounts regularly and reduce unnecessary expenses.\n";
+        } else if (balance >= 100 && balance < 1000) {
+            cout << "Your balance is moderate. Here are some ways to grow your savings:\n";
+            cout << "1. Fixed Deposits (FDs): Safe and steady growth with guaranteed returns.\n";
+            cout << "2. Digital Savings Platforms: Online platforms offering higher interest rates.\n";
+            cout << "\nWould you like more details about these options? (yes/no): ";
+            string response;
+            cin >> response;
+
+            if (response == "yes") {
+                cout << "\n1. Fixed Deposits: Offers a fixed return over a specific period. Ideal for low-risk growth.\n";
+                cout << "2. Digital Savings Platforms: Flexible online accounts with better returns compared to traditional savings accounts.\n";
+            }
+        } else if (balance >= 1000 && balance < 5000) {
+            cout << "Great job! Your balance is healthy. Here are some investment options to consider:\n";
+            cout << "1. Mutual Funds: Diversified and professionally managed investments.\n";
+            cout << "2. Stock Market: Potential for high returns, but requires understanding and risk tolerance.\n";
+            cout << "\nWould you like more details about these options? (yes/no): ";
+            string response;
+            cin >> response;
+
+            if (response == "yes") {
+                cout << "\n1. Mutual Funds: Investment pools managed by professionals, offering moderate growth and risk.\n";
+                cout << "2. Stock Market: Allows investing in individual companies or ETFs. Higher risk but potential for high returns.\n";
+            }
+        } else {
+            cout << "Excellent balance! Consider diversifying with these options:\n";
+            cout << "1. Mutual Funds\n";
+            cout << "2. Stock Market\n";
+            cout << "3. Cryptocurrencies: High risk, high reward. Ideal for tech-savvy investors.\n";
+            cout << "\nWould you like more details about these options? (yes/no): ";
+            string response;
+            cin >> response;
+
+            if (response == "yes") {
+                cout << "\n1. Mutual Funds: Steady and balanced growth with professional management.\n";
+                cout << "2. Stock Market: Offers significant returns but requires careful analysis and risk management.\n";
+                cout << "3. Cryptocurrencies: Digital assets with potential for rapid growth, but very volatile and risky.\n";
+            }
+        }
+
+        cout << "--- End of Advice ---\n";
+    }
+};
 
 int main() {
-    runATM();
+    double initialBalance;
+    int userPin;
+
+    cout << "Welcome to the ATM!" << endl;
+    cout << "Set your initial balance: $";
+    cin >> initialBalance;
+    cout << "Set your 4-digit PIN: ";
+    cin >> userPin;
+
+    ATM atm(initialBalance, userPin);
+
+    int inputPin;
+    cout << "\nPlease enter your PIN to access your account: ";
+    cin >> inputPin;
+
+    if (!atm.authenticate(inputPin)) {
+        return 0;
+    }
+
+    int choice;
+    do {
+        cout << "\nATM Menu: \n";
+        cout << "1. Check Balance\n";
+        cout << "2. Deposit Money\n";
+        cout << "3. Withdraw Money\n";
+        cout << "4. Get Advice\n";
+        cout << "5. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+        case 1:
+            atm.checkBalance();
+            break;
+        case 2: {
+            double depositAmount;
+            cout << "Enter amount to deposit: $";
+            cin >> depositAmount;
+            atm.deposit(depositAmount);
+            break;
+        }
+        case 3: {
+            double withdrawAmount;
+            cout << "Enter amount to withdraw: $";
+            cin >> withdrawAmount;
+            atm.withdraw(withdrawAmount);
+            break;
+        }
+        case 4:
+            atm.suggestAdvice();
+            break;
+        case 5:
+            cout << "Thank you for using the ATM. Goodbye!" << endl;
+            break;
+        default:
+            cout << "Invalid choice. Please select a valid option." << endl;
+        }
+
+    } while (choice != 5);
+
     return 0;
 }
