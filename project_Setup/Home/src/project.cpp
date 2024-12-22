@@ -1,207 +1,176 @@
-#include <graphics.h>
-#include <iostream>
-#include <conio.h>
+
+#include <stdio.h>
 #include <stdlib.h>
-using namespace std;
+#include <conio.h>
+#include <graphics.h>
+#include <string.h>
 
-// Class for drawing the traffic light
-class TrafficLight
+// Global Variables
+int balance = 1000;
 
- {
+// Function to Display Balance
+void displayBalance() {
+    char balanceText[50];
+    sprintf(balanceText, "Your Balance: $%d", balance);
+    outtextxy(150, 150, balanceText);
+}
 
-
-private:
-
-    int state; // 0 = Red, 1 = Yellow, 2 = Green
-public:
-
-    TrafficLight() : state(0) {} // Initialize with red light
-
-    void draw()
-
-    
-     {
-        // Traffic light pole and base
-
-        setfillstyle(SOLID_FILL, BLACK);
-        rectangle(500, 100, 550, 300); // Pole
-        floodfill(501, 101, WHITE);
-
-
-        // Base of the pole
-        setfillstyle(SOLID_FILL, LIGHTGRAY);
-        rectangle(495, 300, 555, 320); // Base
-        floodfill(500, 310, WHITE);
-
-
-        // Red light
-        setfillstyle(SOLID_FILL, state == 0 ? RED : DARKGRAY);
-        circle(525, 150, 20); // Top (Red Light)
-        floodfill(525, 150, WHITE);
-
-
-        // Yellow light
-        setfillstyle(SOLID_FILL, state == 1 ? YELLOW : DARKGRAY);
-        circle(525, 200, 20); // Middle (Yellow Light)
-        floodfill(525, 200, WHITE);
-
-
-        // Green light
-        setfillstyle(SOLID_FILL, state == 2 ? GREEN : DARKGRAY);
-        circle(525, 250, 20); // Bottom (Green Light)
-        floodfill(525, 250, WHITE);
-
+// Function to Withdraw Money
+void withdrawMoney(int amount) {
+    char message[50];
+    if (amount > balance) {
+        outtextxy(150, 200, "Insufficient Balance!");
+    } else {
+        balance -= amount;
+        sprintf(message, "Successfully Withdrawn: $%d", amount);
+        outtextxy(150, 200, message);
     }
+    delay(2000); // Delay to display the message
+}
 
-    void updateState() 
+// Function to Deposit Money
+void depositMoney(int amount) {
+    char message[50];
+    balance += amount;
+    sprintf(message, "Successfully Deposited: $%d", amount);
+    outtextxy(150, 200, message);
+    delay(2000); // Delay to display the message
+}
 
-    {
-        state = (state + 1) % 3; // Cycle through 0 -> 1 -> 2 -> 0
-    }
-
-
-    int getState() 
-    {
-        return state;
-    }
-};
-
-// Class for drawing the car
-class Car
-
- {
-
-private:
-
-    int x, y;
-    
-public:
-
-    Car(int startX, int startY) : x(startX), y(startY) {}
-
-    void draw()
-
-     {
-        // Car body
-        setfillstyle(SOLID_FILL, BLUE);
-        rectangle(x, y, x + 100, y + 40); // Main body
-        floodfill(x + 1, y + 1, WHITE);
-
-        // Car roof
-        rectangle(x + 20, y - 20, x + 80, y); // Roof
-        floodfill(x + 21, y - 19, WHITE);
-
-        // Wheels
-        setfillstyle(SOLID_FILL, BLACK);
-        circle(x + 20, y + 50, 10); // Front wheel
-        floodfill(x + 21, y + 51, WHITE);
-
-        circle(x + 80, y + 50, 10); // Rear wheel
-        floodfill(x + 81, y + 51, WHITE);
-    }
-
-    void move()
-     {
-        x += 5; // Move car forward
-    }
-
-    void resetPosition(int screenWidth)
-     {
-        if (x > screenWidth) 
-        {
-            x = -100; // Reset position if off-screen
+// Function to Get Numeric Input from User
+int getNumericInput(int x, int y) {
+    char input[10];
+    int i = 0;
+    char ch;
+    outtextxy(x, y, "Enter amount: ");
+    while (1) {
+        ch = getch();
+        if (ch == 13) { // Enter key
+            input[i] = '\0';
+            break;
+        } else if (ch >= '0' && ch <= '9') { // Allow only numeric input
+            input[i++] = ch;
+            char temp[2] = {ch, '\0'};
+            outtextxy(x + 100 + (i * 10), y, temp);
+        } else if (ch == 8 && i > 0) { // Backspace
+            i--;
         }
     }
-};
+    return atoi(input); // Convert string to integer
+}
 
-// Class for drawing the road
-
-class Road 
-{
-public:
-    void draw()
-     {
-        // Road
-        setfillstyle(SOLID_FILL, DARKGRAY);
-        rectangle(0, 400, 640, 480);
-        floodfill(1, 401, WHITE);
-
-        // Lane markings
-        setfillstyle(SOLID_FILL, WHITE);
-        for (int i = 0; i < 640; i += 80) 
-        {
-            rectangle(i + 30, 440, i + 50, 450);
-            floodfill(i + 31, 441, WHITE);
+// Function to Suggest Financial Advice Based on Balance
+void suggestAdvice() {
+    char message[200];
+    if (balance < 100) {
+        strcpy(message, "Warning: Your balance is low. Consider saving more.");
+        outtextxy(150, 200, message);
+        strcpy(message, "Start saving small amounts regularly and reduce unnecessary expenses.");
+        outtextxy(150, 220, message);
+    } else if (balance >= 100 && balance < 1000) {
+        strcpy(message, "Your balance is moderate. Consider these options to grow your savings:");
+        outtextxy(150, 200, message);
+        strcpy(message, "1. Fixed Deposits (FDs): Safe with guaranteed returns.");
+        outtextxy(150, 220, message);
+        strcpy(message, "2. Digital Savings: Online platforms with higher interest rates.");
+        outtextxy(150, 240, message);
+        delay(2000); // Wait for user to read
+        outtextxy(150, 260, "Would you like more details? (yes/no): ");
+        char response = getch();
+        if (response == 'y' || response == 'Y') {
+            strcpy(message, "1. FDs: Fixed return over a period. Ideal for low-risk growth.");
+            outtextxy(150, 280, message);
+            strcpy(message, "2. Digital Savings: Flexible with better returns than regular accounts.");
+            outtextxy(150, 300, message);
+        }
+    } else if (balance >= 1000 && balance < 5000) {
+        strcpy(message, "Your balance is healthy! Consider these investment options:");
+        outtextxy(150, 200, message);
+        strcpy(message, "1. Mutual Funds: Diversified and professionally managed investments.");
+        outtextxy(150, 220, message);
+        strcpy(message, "2. Stock Market: Potential for high returns, but with higher risk.");
+        outtextxy(150, 240, message);
+        delay(2000);
+        outtextxy(150, 260, "Would you like more details? (yes/no): ");
+        char response = getch();
+        if (response == 'y' || response == 'Y') {
+            strcpy(message, "1. Mutual Funds: Moderate risk with professional management.");
+            outtextxy(150, 280, message);
+            strcpy(message, "2. Stock Market: Individual company or ETF investment. High return potential.");
+            outtextxy(150, 300, message);
+        }
+    } else {
+        strcpy(message, "Excellent balance! Consider diversifying your investments:");
+        outtextxy(150, 200, message);
+        strcpy(message, "1. Mutual Funds");
+        outtextxy(150, 220, message);
+        strcpy(message, "2. Stock Market");
+        outtextxy(150, 240, message);
+        strcpy(message, "3. Cryptocurrencies: High risk, high reward.");
+        outtextxy(150, 260, message);
+        delay(2000);
+        outtextxy(150, 280, "Would you like more details? (yes/no): ");
+        char response = getch();
+        if (response == 'y' || response == 'Y') {
+            strcpy(message, "1. Mutual Funds: Steady growth with professional management.");
+            outtextxy(150, 300, message);
+            strcpy(message, "2. Stock Market: High risk, high potential returns.");
+            outtextxy(150, 320, message);
+            strcpy(message, "3. Cryptocurrencies: Volatile but potentially lucrative.");
+            outtextxy(150, 340, message);
         }
     }
-};
+    delay(2000); // Wait for user to read
+}
 
-// Main simulation class
-class Simulation 
-{
-private:
-    TrafficLight trafficLight;
-    Car car;
-    Road road;
-    int timer; // Timer for traffic light state change
+// Function to Run the ATM Simulation
+void runATM() {
+    int gd = DETECT, gm;
+    initgraph(&gd, &gm, "");
 
-public:
-    Simulation() : car(0, 420), timer(0) {}
+    while (1) {
+        cleardevice(); // Clear screen
+        outtextxy(180, 20, "Welcome to the Money Management Application");
+        outtextxy(150, 100, "1. View Balance");
+        outtextxy(150, 120, "2. Withdraw Money");
+        outtextxy(150, 140, "3. Deposit Money");
+        outtextxy(150, 160, "4. Get Financial Advice");
+        outtextxy(150, 180, "5. Exit");
 
-    void run()
-     {
-        int gd = DETECT, gm;
-        initgraph(&gd, &gm, "");
+        char choice = getch(); // Get user input
 
-        while (!kbhit()) { // Run until a key is pressed
-            cleardevice(); // Clear the screen
-
-            // Draw traffic light
-            trafficLight.draw();
-
-            // Draw road
-            road.draw();
-
-            // Move the car only if the light is green
-            if (trafficLight.getState() == 2) 
-            
-            {
-                car.move();
-            }
-
-            // Reset car position if off-screen
-            car.resetPosition(getmaxx());
-
-            // Draw the car
-            car.draw();
-
-            // Update traffic light state every 100 cycles (about 5 seconds)
-            timer++;
-            if (timer > 100)
-
-
-             {
-                trafficLight.updateState();
-                timer = 0;
-            }
-
-            delay(50); // Animation delay
+        cleardevice(); // Clear screen for next action
+        switch (choice) {
+        case '1': // View Balance
+            displayBalance();
+            delay(2000); // Show balance for 2 seconds
+            break;
+        case '2': { // Withdraw Money
+            int withdrawAmount = getNumericInput(150, 100);
+            withdrawMoney(withdrawAmount);
+            break;
         }
-
-        getch();
-        closegraph();
-
-
+        case '3': { // Deposit Money
+            int depositAmount = getNumericInput(150, 100);
+            depositMoney(depositAmount);
+            break;
+        }
+        case '4': // Financial Advice
+            suggestAdvice();
+            break;
+        case '5': // Exit
+            outtextxy(150, 100, "Thank you for using the ATM!");
+            delay(2000);
+            closegraph();
+            return;
+        default:
+            outtextxy(150, 200, "Invalid Option! Try again.");
+            delay(2000); // Wait for user to see the message
+        }
     }
+}
 
-};
-
-int main()
-
- {
-
-    Simulation simulation;
-    simulation.run();
+int main() {
+    runATM();
     return 0;
-
 }
